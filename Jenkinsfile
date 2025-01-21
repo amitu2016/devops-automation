@@ -7,10 +7,25 @@ pipeline {
         stage('Build Maven'){
             steps{
                 checkout scmGit(branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[credentialsId: '457250a2-5054-43c6-b67b-60af5c1e641e', url: 'https://github.com/amitu2016/devops-automation.git']])
-                bat 'mvn clean install'
+                bat 'mvn compile'
+            }
+        }
+         stage('Unit Testing'){
+            steps{
+                bat 'mvn clean test'
+            }
+        }
+        stage('SonarQube Analysis') {
+            environment {
+                SONAR_HOST_URL = 'http://localhost:9099' // Replace with your SonarQube URL
+                SONAR_AUTH_TOKEN = credentials('sonarqube') // Store your token in Jenkins credentials
+            }
+            steps {
+                sh 'mvn sonar:sonar -Dsonar.projectKey=sample_project -Dsonar.host.url=$SONAR_HOST_URL -Dsonar.login=$SONAR_AUTH_TOKEN'
             }
         }
         stage('Build docker image'){
+            sh 'mvn clean package'
             steps{
                 script{
                     bat 'docker build -t amitu2021/devops-integration .'
