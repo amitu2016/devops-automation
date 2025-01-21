@@ -21,11 +21,11 @@ pipeline {
                 SONAR_AUTH_TOKEN = credentials('sonarqube') // Store your token in Jenkins credentials
             }
             steps {
-                sh 'mvn sonar:sonar -Dsonar.projectKey=sample_project -Dsonar.host.url=$SONAR_HOST_URL -Dsonar.login=$SONAR_AUTH_TOKEN'
+                bat 'mvn sonar:sonar -Dsonar.projectKey=sample_project -Dsonar.host.url=$SONAR_HOST_URL -Dsonar.login=$SONAR_AUTH_TOKEN'
             }
         }
         stage('Build docker image'){
-            sh 'mvn clean package'
+            bat 'mvn clean package'
             steps{
                 script{
                     bat 'docker build -t amitu2021/devops-integration .'
